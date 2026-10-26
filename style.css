@@ -146,3 +146,20 @@ footer span{color:var(--green)}
   flex-direction: column;
   flex-grow: 1;
 }
+/* Apply this to both coach cards */
+.coach-card {
+  position: relative;
+  overflow: hidden; /* Keeps the character inside the card block */
+}
+
+/* Position and resize the character in the right empty area */
+.coach-character {
+  position: absolute;
+  right: 25px;         /* Places the character in the empty right area */
+  bottom: 0px;         /* Aligns the bottom */
+  height: 90%;         /* Makes them slightly shorter than the block */
+  width: auto;
+  object-fit: cover;
+  object-position: top; /* Crops/focuses from the waist up */
+  pointer-events: none; /* Ensures clicks pass through to the card if needed */
+}
