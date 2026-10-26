@@ -206,3 +206,20 @@ footer span{color:var(--green)}
   .coach-card { min-height: 240px; }
   .coach-card > *:not(.coach-img) { max-width: 58%; }
 }
+.coach-card{
+  display:flex;
+  flex-direction:row;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  flex:1;
+  min-height:260px;
+}
+.coach-content{flex:1;min-width:0;align-self:center}
+.coach-character{
+  width:40%;
+  max-width:220px;
+  height:auto;
+  align-self:flex-end;
+  object-fit:contain;
+}
