@@ -223,3 +223,33 @@ footer span{color:var(--green)}
   align-self:flex-end;
   object-fit:contain;
 }
+.grid.two-col .coach-card{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:flex-end !important;
+  justify-content:space-between !important;
+  gap:10px;
+  min-height:260px;
+  padding:20px;
+}
+.grid.two-col .coach-content{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  gap:10px;
+  flex:1 1 55% !important;
+  min-width:0;
+  align-self:center !important;
+}
+.grid.two-col .coach-content h2,
+.grid.two-col .coach-content p{margin:0}
+.grid.two-col .coach-content .primary{width:auto !important;white-space:nowrap}
+.grid.two-col .coach-character{
+  flex:0 0 40% !important;
+  width:40% !important;
+  max-width:220px !important;
+  height:auto !important;
+  max-height:240px;
+  object-fit:contain;
+  align-self:flex-end !important;
+}
