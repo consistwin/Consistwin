@@ -1,73 +1,87 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Consistwin — Your day, your way</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d0c">
+  <title>Consistwin — Show Up. Level Up.</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand"><span class="brand-mark">✓</span><span>consistwin<span class="dot">.</span></span></div>
-      <p class="side-label">YOUR SPACE</p>
-      <button class="nav active" data-view="dashboard">◫ <span>Dashboard</span></button>
-      <button class="nav" data-view="routines">▦ <span>My routines</span></button>
-      <button class="nav" data-view="progress">↗ <span>Progress</span></button>
-      <button class="nav" data-view="coach">✳ <span>AI Coach</span></button>
-      <div class="sidebar-bottom"><div class="avatar">C</div><div><strong>Your space</strong><small>Personal consistency</small></div></div>
-    </aside>
+  <aside class="sidebar">
+    <a class="brand" href="#" onclick="showPage('dashboard');return false">
+      <span class="brand-icon">C</span>
+      <span>consist<span class="green">win</span><small>BUILT BY CONSISTENCY</small></span>
+    </a>
+    <p class="nav-label">WORKSPACE</p>
+    <button class="nav active" data-page="dashboard">▦ <span>Dashboard</span></button>
+    <button class="nav" data-page="routines">✓ <span>Daily routines</span></button>
+    <button class="nav" data-page="calendar">▦ <span>Activity calendars</span></button>
+    <button class="nav" data-page="workouts">↗ <span>Workout tracker</span></button>
+    <button class="nav" data-page="progress">⌁ <span>Progress & PRs</span></button>
+    <button class="nav" data-page="coaches">✦ <span>Coaches</span></button>
+    <div class="sidebar-bottom">
+      <div class="mini-status"><span class="status-dot"></span> Your consistency journey</div>
+      <button class="nav" data-page="settings">⚙ <span>Settings & backup</span></button>
+    </div>
+  </aside>
 
-    <main class="main">
-      <header class="topbar"><div><p class="eyebrow">YOUR PERSONAL CONSISTENCY SPACE</p><h1 id="page-title">Dashboard</h1></div><div class="today-pill" id="today-label"></div></header>
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow" id="todayLabel">YOUR JOURNEY STARTS HERE</p>
+        <h1 id="pageTitle">Dashboard</h1>
+      </div>
+      <div class="top-actions">
+        <span class="today-chip" id="dateChip"></span>
+        <button class="primary" onclick="openWorkout()">+ Log workout</button>
+      </div>
+    </header>
+    <div id="app"></div>
+    <footer>CONSISTWIN <span>·</span> SHOW UP. LEVEL UP.</footer>
+  </main>
 
-      <section class="view active" id="dashboard-view">
-        <div class="hero">
-          <div><p class="eyebrow green">ONE DAY AT A TIME</p><h2>Let's make today count.</h2><p class="muted">Small wins add up. Focus on what matters today.</p></div>
-          <div class="hero-stat"><span id="today-percent">0%</span><small>DAILY PROGRESS</small></div>
-        </div>
-        <div class="section-heading"><div><h3>Today's plan</h3><p class="muted">Your next steps, chosen by you.</p></div><button class="primary small" id="add-from-dashboard">+ Add activity</button></div>
-        <div id="today-list" class="activity-list"></div>
-        <div class="two-col">
-          <div class="panel"><div class="panel-heading"><h3>This week</h3><button class="text-button" data-go="progress">View progress →</button></div><div class="mini-stats"><div><strong id="week-completed">0</strong><small>Completed</small></div><div><strong id="week-rate">0%</strong><small>Completion rate</small></div><div><strong id="active-days">0</strong><small>Active days</small></div></div></div>
-          <div class="panel"><div class="panel-heading"><h3>A note from your coach</h3><span class="spark">✳</span></div><p id="dashboard-coach" class="coach-note">Add a few activities and your coach will help you choose a realistic next step.</p><button class="text-button" data-go="coach">Open coach →</button></div>
-        </div>
-      </section>
+  <dialog id="workoutDialog">
+    <form id="workoutForm">
+      <div class="dialog-head">
+        <div><p class="eyebrow">TRAINING LOG</p><h2 id="workoutDialogTitle">Log workout</h2></div>
+        <button type="button" class="icon-btn" onclick="closeWorkout()">✕</button>
+      </div>
+      <label>Date<input id="workoutDate" type="date" required></label>
+      <label>Workout name<input id="workoutName" placeholder="e.g. Chest & biceps" required></label>
+      <label>Exercise / machine<input id="exerciseName" placeholder="e.g. Barbell bench press" required></label>
+      <div id="setsEditor"></div>
+      <button type="button" class="secondary full" onclick="addSet()">+ Add set</button>
+      <label>Notes<textarea id="workoutNotes" placeholder="Technique, energy, how the session felt…"></textarea></label>
+      <div class="dialog-actions">
+        <button type="button" class="secondary" onclick="closeWorkout()">Cancel</button>
+        <button type="submit" class="primary">Save workout</button>
+      </div>
+    </form>
+  </dialog>
 
-      <section class="view" id="routines-view">
-        <div class="section-heading"><div><h3>Your routines</h3><p class="muted">Track anything you want to be consistent with.</p></div><button class="primary" id="add-routine">+ Add activity</button></div>
-        <form id="activity-form" class="panel form-panel hidden">
-          <h3 id="form-heading">Create an activity</h3>
-          <div class="form-grid">
-            <label>Activity name<input id="activity-title" maxlength="70" placeholder="e.g. Study mathematics" required /></label>
-            <label>Category<select id="activity-category"><option>Study</option><option>Fitness</option><option>Sleep</option><option>Reading</option><option>Personal</option><option>Other</option></select></label>
-            <label>Schedule day<select id="activity-day"><option value="0">Every day</option><option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option><option value="7">Sunday</option></select></label>
-            <label>Time (optional)<input id="activity-time" type="time" /></label>
-            <label class="full">Notes (optional)<input id="activity-notes" maxlength="180" placeholder="Anything that helps you follow through" /></label>
-          </div>
-          <div class="form-actions"><button type="button" class="secondary" id="cancel-form">Cancel</button><button class="primary" type="submit">Save activity</button></div>
-        </form>
-        <div id="all-list" class="activity-list"></div>
-      </section>
+  <dialog id="routineDialog">
+    <form id="routineForm">
+      <div class="dialog-head">
+        <div><p class="eyebrow">BUILD CONSISTENCY</p><h2>New routine</h2></div>
+        <button type="button" class="icon-btn" onclick="document.getElementById('routineDialog').close()">✕</button>
+      </div>
+      <label>Routine name<input id="routineName" placeholder="e.g. Study mathematics" required></label>
+      <label>Category
+        <select id="routineCategory">
+          <option>Fitness</option><option>Study</option><option>Health</option>
+          <option>Personal</option><option>Other</option>
+        </select>
+      </label>
+      <div class="dialog-actions">
+        <button type="button" class="secondary" onclick="document.getElementById('routineDialog').close()">Cancel</button>
+        <button type="submit" class="primary">Create routine</button>
+      </div>
+    </form>
+  </dialog>
 
-      <section class="view" id="progress-view">
-        <div class="hero compact"><div><p class="eyebrow green">PROGRESS, NOT PERFECTION</p><h2>Your week at a glance.</h2><p class="muted">Based on activities you actually completed in this browser.</p></div></div>
-        <div class="stats-grid"><div class="panel"><small>COMPLETED THIS WEEK</small><strong id="progress-completed">0</strong></div><div class="panel"><small>COMPLETION RATE</small><strong id="progress-rate">0%</strong></div><div class="panel"><small>ACTIVE DAYS</small><strong id="progress-days">0</strong></div></div>
-        <div class="panel"><h3>Last 7 days</h3><div class="week-bars" id="week-bars"></div></div>
-        <div class="panel"><h3>Coach's reflection</h3><p id="weekly-reflection" class="coach-note"></p></div>
-      </section>
-
-      <section class="view" id="coach-view">
-        <div class="hero compact"><div><p class="eyebrow green">SUPPORTIVE. PRACTICAL. PERSONAL.</p><h2>Your consistency coach.</h2><p class="muted">No guilt trips. Just useful next steps from your activity history.</p></div><div class="hero-icon">✳</div></div>
-        <div class="coach-layout">
-          <div class="panel"><div class="panel-heading"><h3>What do you need?</h3><span class="spark">✳</span></div><p class="muted">Choose a check-in. Recommendations use your saved activity and completion data.</p><div class="coach-actions"><button class="coach-action" data-coach="today"><span>◷</span><div><strong>Plan my day</strong><small>Find a manageable next step</small></div><b>→</b></button><button class="coach-action" data-coach="missed"><span>↻</span><div><strong>Help me get back on track</strong><small>Review missed activities kindly</small></div><b>→</b></button><button class="coach-action" data-coach="week"><span>↗</span><div><strong>Analyze my week</strong><small>Reflect on your actual progress</small></div><b>→</b></button><button class="coach-action" data-coach="routine"><span>⚙</span><div><strong>Improve my routine</strong><small>Spot a pattern worth changing</small></div><b>→</b></button></div></div>
-          <div class="panel response-panel"><div class="panel-heading"><h3>Your recommendation</h3><span class="status">RULE-BASED COACH</span></div><div id="coach-response"><div class="empty-state"><div class="empty-icon">✳</div><strong>Your next step starts here.</strong><p>Choose one of the check-ins to get a recommendation based on your data.</p></div></div><button class="secondary full-width" id="coach-refresh">Refresh recommendation</button></div>
-        </div>
-        <p class="footnote">This coach uses predefined rules, not a generative AI model. It only makes claims supported by the activities stored in this browser.</p>
-      </section>
-    </main>
-  </div>
-  <div id="toast" role="status" class="toast"></div>
+  <input id="importFile" type="file" accept="application/json,.json" hidden>
+  <div id="toast" role="status"></div>
   <script src="app.js"></script>
 </body>
 </html>
