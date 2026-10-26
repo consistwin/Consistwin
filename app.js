@@ -315,19 +315,22 @@ function forecastStrength() {
   const result=best.est*Math.pow(1+rate/100,months);
   $("forecastResult").innerHTML=`Starting estimate: <strong>${best.est.toFixed(1)} kg</strong><br>At ${rate}% per month for ${months} months: <strong>${result.toFixed(1)} kg</strong><br><span class="small">Illustrative scenario only. Real progress is uneven and may be slower or faster.</span>`;
 }
-
 /* COACHES */
 function renderCoaches() {
   return `<div class="grid two-col">
     <div class="coach-card" onclick="openCoach('science')" style="cursor: pointer;">
-      <img src="science-coach.png" alt="Science-Based Coach" class="coach-avatar" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 12px;">
+      <div class="coach-avatar-wrapper" style="width: 80px; height: 80px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">
+        <img src="images/science-coach.png" alt="Science-Based Coach" style="max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.4));">
+      </div>
       <span class="pill">EVIDENCE-BASED</span>
       <h2>Science-Based Coach</h2>
       <p>Measured guidance on training volume, effort, recovery, technique, and progressive overload.</p>
       <button class="primary" onclick="event.stopPropagation(); openCoach('science')">Talk to this coach →</button>
     </div>
     <div class="coach-card old" onclick="openCoach('old')" style="cursor: pointer;">
-      <img src="oldschool-coach.png" alt="Old-School Coach" class="coach-avatar" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 12px;">
+      <div class="coach-avatar-wrapper" style="width: 80px; height: 80px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">
+        <img src="images/oldschool-coach.png" alt="Old-School Coach" style="max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.4));">
+      </div>
       <span class="pill">OLD-SCHOOL MINDSET</span>
       <h2>Old-School Coach</h2>
       <p>Direct, motivating gym advice focused on discipline, hard work, and consistent training.</p>
