@@ -136,7 +136,7 @@ footer span{color:var(--green)}
   width: 150px;          /* Adjust width to make them bigger/smaller */
   height: 180px;         /* Control height to make them shorter than the card block */
   object-fit: cover;     
-  object-position: top;  /* Crops/focuses from the waist up */
+  object-position: right;  /* Crops/focuses from the waist up */
   flex-shrink: 0;        /* Prevents the image from shrinking */
 }
 
