@@ -318,24 +318,24 @@ function forecastStrength() {
 /* COACHES */
 function renderCoaches() {
   return `<div class="grid two-col">
-    <div class="coach-card" onclick="openCoach('science')" style="cursor: pointer;">
-      <div class="coach-avatar-wrapper" style="width: 80px; height: 80px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">
-        <img src="images/science-coach.png" alt="Science-Based Coach" style="max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.4));">
-      </div>
-      <span class="pill">EVIDENCE-BASED</span>
-      <h2>Science-Based Coach</h2>
-      <p>Measured guidance on training volume, effort, recovery, technique, and progressive overload.</p>
-      <button class="primary" onclick="event.stopPropagation(); openCoach('science')">Talk to this coach →</button>
-    </div>
-    <div class="coach-card old" onclick="openCoach('old')" style="cursor: pointer;">
-      <div class="coach-avatar-wrapper" style="width: 80px; height: 80px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">
-        <img src="images/oldschool-coach.png" alt="Old-School Coach" style="max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.4));">
-      </div>
-      <span class="pill">OLD-SCHOOL MINDSET</span>
-      <h2>Old-School Coach</h2>
-      <p>Direct, motivating gym advice focused on discipline, hard work, and consistent training.</p>
-      <button class="primary" onclick="event.stopPropagation(); openCoach('old')">Talk to this coach →</button>
-    </div>
+    <div class="coach-card" onclick="openCoach('science')" style="cursor:pointer;">
+  <div class="coach-content">
+    <span class="pill">EVIDENCE-BASED</span>
+    <h2>Science-Based Coach</h2>
+    <p>Measured guidance on training volume, effort, recovery, technique, and progressive overload.</p>
+    <button class="primary" onclick="event.stopPropagation(); openCoach('science')">Talk to this coach →</button>
+  </div>
+  <img class="coach-character" src="images/science-coach.png" alt="Science-Based Coach">
+</div>
+<div class="coach-card old" onclick="openCoach('old')" style="cursor:pointer;">
+  <div class="coach-content">
+    <span class="pill">OLD-SCHOOL MINDSET</span>
+    <h2>Old-School Coach</h2>
+    <p>Direct, motivating gym advice focused on discipline, hard work, and consistent training.</p>
+    <button class="primary" onclick="event.stopPropagation(); openCoach('old')">Talk to this coach →</button>
+  </div>
+  <img class="coach-character" src="images/oldschool-coach.png" alt="Old-School Coach">
+</div>
   </div>
   <section class="panel" style="margin-top:16px">
     <div class="panel-head"><h2 id="coachTitle">Coach advice</h2></div>
