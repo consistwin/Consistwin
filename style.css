@@ -163,3 +163,46 @@ footer span{color:var(--green)}
   object-position: right; /* Crops/focuses from the waist up */
   pointer-events: none; /* Ensures clicks pass through to the card if needed */
 }
+/* Container holding both cards: equal width, side by side */
+.coach-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Each card */
+.coach-card {
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Keep text on the left half */
+.coach-card > *:not(.coach-img) {
+  max-width: 55%;
+  position: relative;
+  z-index: 1;
+}
+
+/* Image on the right, standing at the bottom of the card */
+.coach-img {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  max-width: 45%;
+  object-fit: contain;
+  object-position: bottom right;
+}
+
+/* Phones: stack the cards, shrink the text area slightly */
+@media (max-width: 650px) {
+  .coach-grid { grid-template-columns: 1fr; }
+  .coach-card { min-height: 240px; }
+  .coach-card > *:not(.coach-img) { max-width: 58%; }
+}
