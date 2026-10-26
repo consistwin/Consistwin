@@ -160,6 +160,6 @@ footer span{color:var(--green)}
   height: 90%;         /* Makes them slightly shorter than the block */
   width: auto;
   object-fit: cover;
-  object-position: top; /* Crops/focuses from the waist up */
+  object-position: right; /* Crops/focuses from the waist up */
   pointer-events: none; /* Ensures clicks pass through to the card if needed */
 }
