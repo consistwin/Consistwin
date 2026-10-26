@@ -121,8 +121,24 @@ footer span{color:var(--green)}
 #toast.show{opacity:1}
 @media(max-width:1050px){.sidebar{width:205px}.main{margin-left:205px;padding:25px 22px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}.year-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){
-  .sidebar{width:120px}
-  .main{margin-left:120px;padding:20px 14px}
+  .sidebar{
+    width:150px;
+    padding:14px 8px;
+    overflow-x:hidden;
+  }
+  .sidebar a,
+  .sidebar button{
+    font-size:13px;
+    padding:10px 8px;
+    gap:8px;
+    white-space:normal;
+    line-height:1.2;
+  }
+  .main{
+    margin-left:150px;
+    padding:18px 12px;
+  }
+  .main h1{font-size:28px}
 }
 /* 1. Adjust your coach card container to use Flexbox */
 /* Coach Card Container */
