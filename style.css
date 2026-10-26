@@ -121,3 +121,28 @@ footer span{color:var(--green)}
 #toast.show{opacity:1}
 @media(max-width:1050px){.sidebar{width:205px}.main{margin-left:205px;padding:25px 22px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}.year-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.sidebar{position:sticky;top:0;inset:auto;width:100%;height:auto;padding:10px;display:block;border-right:0;border-bottom:1px solid var(--line)}.brand{padding:0 5px 10px;font-size:16px}.brand-icon{width:30px;height:30px}.brand small{font-size:7px}.nav-label,.sidebar-bottom,.nav span{display:none}.sidebar .nav{display:inline-flex;width:auto;padding:9px 10px;margin:0 1px;font-size:16px}.main{margin:0;padding:20px 13px}.topbar{align-items:flex-start;margin-bottom:20px}.topbar h1{font-size:25px}.top-actions{flex-direction:column;align-items:flex-end;gap:6px}.today-chip{display:none}.primary,.secondary{padding:9px 11px}.stats{gap:9px}.stat,.panel{padding:14px}.stat-value{font-size:25px}.year-grid{grid-template-columns:1fr}.cal-cell{min-height:43px;padding:5px}.big-progress{gap:12px}.ring{width:82px;height:82px}.three-col{grid-template-columns:1fr}.set-row{grid-template-columns:22px 1fr 1fr 1fr 20px;gap:4px}.set-row input{font-size:11px;padding:8px 4px}}
+/* 1. Adjust your coach card container to use Flexbox */
+.coach-card {
+  display: flex;
+  align-items: center;
+  gap: 24px; /* Space between the character and the text */
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 2. Style the character image (waist-up, larger, positioned on the left) */
+.coach-character {
+  width: 150px;          /* Adjust width to make them bigger/smaller */
+  height: 180px;         /* Control height to make them shorter than the card block */
+  object-fit: cover;     
+  object-position: top;  /* Crops/focuses from the waist up */
+  flex-shrink: 0;        /* Prevents the image from shrinking */
+}
+
+/* 3. Ensure the text content fills the remaining space properly */
+.coach-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
