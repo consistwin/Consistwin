@@ -319,31 +319,46 @@ function forecastStrength() {
 /* COACHES */
 function renderCoaches() {
   return `<div class="grid two-col">
-    <div class="coach-card"><div class="coach-symbol">⚕</div><span class="pill">EVIDENCE-BASED</span><h2>Science-Based Coach</h2><p>Measured guidance on training volume, effort, recovery, technique, and progressive overload.</p><button class="primary" onclick="openCoach('science')">Talk to this coach →</button></div>
-    <div class="coach-card old"><div class="coach-symbol">🏆</div><span class="pill">OLD-SCHOOL MINDSET</span><h2>Old-School Coach</h2><p>Direct, motivating gym advice focused on discipline, hard work, and consistent training.</p><button class="primary" onclick="openCoach('old')">Talk to this coach →</button></div>
+    <div class="coach-card" onclick="openCoach('science')" style="cursor: pointer;">
+      <div class="coach-symbol">⚕</div>
+      <span class="pill">EVIDENCE-BASED</span>
+      <h2>Science-Based Coach</h2>
+      <p>Measured guidance on training volume, effort, recovery, technique, and progressive overload.</p>
+      <button class="primary" onclick="event.stopPropagation(); openCoach('science')">Talk to this coach →</button>
+    </div>
+    <div class="coach-card old" onclick="openCoach('old')" style="cursor: pointer;">
+      <div class="coach-symbol">🏆</div>
+      <span class="pill">OLD-SCHOOL MINDSET</span>
+      <h2>Old-School Coach</h2>
+      <p>Direct, motivating gym advice focused on discipline, hard work, and consistent training.</p>
+      <button class="primary" onclick="event.stopPropagation(); openCoach('old')">Talk to this coach →</button>
+    </div>
   </div>
-  <section class="panel" style="margin-top:16px"><div class="panel-head"><h2 id="coachTitle">Choose your coaching style</h2></div><div id="coachContent">${empty("Select a coach to get guidance based on your workout history.")}</div></section>
-  <p class="small">These are built-in coaching responses, not live AI or a substitute for a qualified coach or medical professional. Original approved coach portraits can be added later as image assets.</p>`;
-}
-function openCoach(type) {
-  state.coach=type;
-  $("coachTitle").textContent=type==="science"?"Science-Based Coach":"Old-School Coach";
-  const latest=recentWorkouts()[0],exercises=uniqueExercises(),best=exercises.map(x=>({x,p:exercisePR(x)})).filter(x=>x.p).sort((a,b)=>b.p.est-a.p.est)[0];
-  const tips=type==="science"?[
-    ["Effort","For most working sets, finish with roughly 1–3 reps in reserve. Failure can be useful selectively, but it isn't required for every set."],
-    ["Progression","When you reach the top of your rep range with consistent technique, consider a small load increase. Keep a log so progress is measurable."],
-    ["Recovery","Persistent performance drops, joint pain, or fatigue are reasons to reduce training stress and review sleep, food, and exercise selection."],
-    ["Technique","Use controlled reps and a repeatable range of motion. Stop a set if pain or unsafe technique appears."]
-  ]:[
-    ["Discipline","Show up consistently. A sustainable session done well beats a perfect plan you can't repeat."],
-    ["Log the work","Record your sets, reps, and loads. Beat your previous performance gradually instead of chasing numbers every session."],
-    ["Train smart","Hard work matters, but recovery is part of training. Leave room to recover and don't turn every set into a max effort."],
-    ["Own the basics","Keep your technique consistent, use a full comfortable range of motion, and build strength one session at a time."]
-  ];
-  const intro=latest?`Latest entry: ${escapeHTML(latest.exercise)} on ${escapeHTML(latest.date)}.`:"You haven't logged a workout yet. Start by recording your next session.";
-  $("coachContent").innerHTML=`<p>${intro}</p>${best?`<div class="coach-message">Strongest recorded estimate: <strong>${escapeHTML(best.x)} · ${best.p.est.toFixed(1)} kg estimated 1RM</strong></div>`:""}${tips.map(t=>`<div class="coach-message"><strong>${t[0]}</strong><p>${t[1]}</p></div>`).join("")}<div class="coach-message"><strong>Your next action</strong><p>${latest?"Review your last session, then aim for a small, technically sound improvement when recovered.":"Log an exercise and a working set to begin tracking progress."}</p><button class="primary" onclick="openWorkout()">Log a workout</button></div>`;
+  <section class="panel" style="margin-top:16px">
+    <div class="panel-head"><h2 id="coachTitle">Coach advice</h2></div>
+    <div id="coachContent">${empty("Select a coach above to get guidance based on your workout history.")}</div>
+  </section>
+  <p class="small" style="margin-top: 12px;">These are built-in coaching responses, not live AI or a substitute for a qualified coach or medical professional. Original approved coach portraits can be added later as image assets.</p>`;
 }
 
+function openCoach(type) {
+  state.coach = type;
+  $("coachTitle").textContent = type === "science" ? "Science-Based Coach" : "Old-School Coach";
+  const latest = recentWorkouts()[0], exercises = uniqueExercises(), best = exercises.map(x => ({ x, p: exercisePR(x) })).filter(x => x.p).sort((a, b) => b.p.est - a.p.est)[0];
+  const tips = type === "science" ? [
+    ["Effort", "For most working sets, finish with roughly 1–3 reps in reserve. Failure can be useful selectively, but it isn't required for every set."],
+    ["Progression", "When you reach the top of your rep range with consistent technique, consider a small load increase. Keep a log so progress is measurable."],
+    ["Recovery", "Persistent performance drops, joint pain, or fatigue are reasons to reduce training stress and review sleep, food, and exercise selection."],
+    ["Technique", "Use controlled reps and a repeatable range of motion. Stop a set if pain or unsafe technique appears."]
+  ] : [
+    ["Discipline", "Show up consistently. A sustainable session done well beats a perfect plan you can't repeat."],
+    ["Log the work", "Record your sets, reps, and loads. Beat your previous performance gradually instead of chasing numbers every session."],
+    ["Train smart", "Hard work matters, but recovery is part of training. Leave room to recover and don't turn every set into a max effort."],
+    ["Own the basics", "Keep your technique consistent, use a full comfortable range of motion, and build strength one session at a time."]
+  ];
+  const intro = latest ? `Latest entry: ${escapeHTML(latest.exercise)} on ${escapeHTML(latest.date)}.` : "You haven't logged a workout yet. Start by recording your next session.";
+  $("coachContent").innerHTML = `<p>${intro}</p>${best ? `<div class="coach-message">Strongest recorded estimate: <strong>${escapeHTML(best.x)} · ${best.p.est.toFixed(1)} kg estimated 1RM</strong></div>` : ""}${tips.map(t => `<div class="coach-message"><strong>${t[0]}</strong><p>${t[1]}</p></div>`).join("")}<div class="coach-message"><strong>Your next action</strong><p>${latest ? "Review your last session, then aim for a small, technically sound improvement when recovered." : "Log an exercise and a working set to begin tracking progress."}</p><button class="primary" onclick="openWorkout()">Log a workout</button></div>`;
+}
 /* SETTINGS / BACKUPS */
 function renderSettings() {
   return `<div class="grid two-col">
