@@ -8,7 +8,9 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <aside class="sidebar">
+ <button class="menu-btn" onclick="document.body.classList.toggle('menu-open')">☰ Menu</button>
+<div class="menu-backdrop" onclick="document.body.classList.remove('menu-open')"></div>
+<aside class="sidebar" onclick="document.body.classList.remove('menu-open')">
     <a class="brand" href="#" onclick="showPage('dashboard');return false">
       <span class="brand-icon">C</span>
       <span>consist<span class="green">win</span><small>BUILT BY CONSISTENCY</small></span>
