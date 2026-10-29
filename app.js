@@ -277,7 +277,52 @@ function renderWorkouts() {
   ${panel("Workout history",records.length?`<div class="stack">${records.map(w=>`<div class="list-item"><div class="item-main"><strong>${escapeHTML(w.exercise)}</strong><small>${escapeHTML(w.name)} · ${escapeHTML(w.date)} · ${(w.sets||[]).length} sets · ${Math.round(workoutVolume(w)).toLocaleString()} kg volume</small><small>${(w.sets||[]).map(s=>`${s.weight} kg × ${s.reps}${s.rir===null?"":` @ ${s.rir} RIR`}`).join(" · ")}</small>${w.notes?`<small>${escapeHTML(w.notes)}</small>`:""}</div><button class="icon-btn" onclick="openWorkout('${w.id}')">Edit</button><button class="icon-btn" onclick="deleteWorkout('${w.id}')">✕</button></div>`).join("")}</div>`:empty("No workout entries yet. Log your first exercise to start tracking strength.") )}
   <p class="small">RIR means reps in reserve: your estimated number of additional reps before failure. Enter honest estimates; the number is not a precise measurement.</p>`;
 }
-
+/* PROGRESS CHART */
+window.chartMode="w";
+function progressChart(){
+  const ex=state.selectedExercise||uniqueExercises()[0]||"";
+  if(!ex)return "";
+  const byDay={};
+  allSets(ex).forEach(s=>{
+    const v=window.chartMode==="e"?estimate1RM(s.weight,s.reps):Number(s.weight);
+    if(v&&(!byDay[s.date]||v>byDay[s.date]))byDay[s.date]=v;
+  });
+  const pts=Object.keys(byDay).sort().map(d=>({d,v:byDay[d]}));
+  const unit=window.chartMode==="e"?"Estimated 1RM":"Top weight";
+  const toggle=`<div class="toolbar"><button class="secondary" onclick="window.chartMode='w';render()">Top weight</button><button class="secondary" onclick="window.chartMode='e';render()">Estimated 1RM</button></div>`;
+  if(pts.length<2)return panel("Progress over time: "+escapeHTML(ex),toggle+`<p class="small">Log this exercise on at least 2 different days to see a graph.</p>`);
+  const W=340,H=200,L=40,R=12,T=14,B=28;
+  const vals=pts.map(p=>p.v);
+  let lo=Math.min(...vals),hi=Math.max(...vals);
+  if(hi===lo){hi+=1;lo-=1;}
+  const t0=Date.parse(pts[0].d),t1=Date.parse(pts[pts.length-1].d);
+  const X=p=>L+(t1===t0?0:(Date.parse(p.d)-t0)/(t1-t0))*(W-L-R);
+  const Y=p=>T+(1-(p.v-lo)/(hi-lo))*(H-T-B);
+  const line=pts.map(p=>X(p).toFixed(1)+","+Y(p).toFixed(1)).join(" ");
+  const dots=pts.map(p=>`<circle cx="${X(p).toFixed(1)}" cy="${Y(p).toFixed(1)}" r="4" fill="#9be15d"/>`).join("");
+  const fmt=d=>new Date(d+"T00:00").toLocaleDateString(undefined,{month:"short",day:"numeric"});
+  const first=vals[0],last=vals[vals.length-1],mid=vals[Math.floor((vals.length-1)/2)];
+  const d1=mid-first,d2=last-mid,change=last-first;
+  let msg;
+  const recent=vals.slice(-3);
+  if(vals.length>=3&&Math.max(...recent)-Math.min(...recent)<0.5)msg="Plateau: no change over your last 3 sessions.";
+  else if(change>0&&vals.length>=4&&d1>0&&d2<d1*0.5)msg="Going up, but the rate of increase is slowing down.";
+  else if(change>0)msg="Going up: +"+change.toFixed(1)+" kg since "+fmt(pts[0].d)+".";
+  else if(change<0)msg="Going down: "+change.toFixed(1)+" kg since "+fmt(pts[0].d)+".";
+  else msg="No overall change since "+fmt(pts[0].d)+".";
+  const svg=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
+    <line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="#2c332e"/>
+    <line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="#2c332e"/>
+    <polyline points="${line}" fill="none" stroke="#9be15d" stroke-width="2.5"/>${dots}
+    <text x="${L-6}" y="${T+4}" text-anchor="end" font-size="11" fill="#9aa39c">${hi.toFixed(0)}</text>
+    <text x="${L-6}" y="${H-B}" text-anchor="end" font-size="11" fill="#9aa39c">${lo.toFixed(0)}</text>
+    <text x="${L}" y="${H-8}" font-size="11" fill="#9aa39c">${fmt(pts[0].d)}</text>
+    <text x="${W-R}" y="${H-8}" text-anchor="end" font-size="11" fill="#9aa39c">${fmt(pts[pts.length-1].d)}</text>
+  </svg>`;
+  return panel(unit+" over time: "+escapeHTML(ex),toggle+svg+`<p class="small"><strong>${msg}</strong> Latest: ${last.toFixed(1)} kg.</p>`);
+}
+const _renderProgressOld=renderProgress;
+renderProgress=function(){return _renderProgressOld()+progressChart();};
 /* PROGRESS */
 function renderProgress() {
   const exercises=uniqueExercises();
