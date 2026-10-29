@@ -226,8 +226,8 @@ function openWorkout(id=null) {
   state.editingId=id;
   const w=id?state.workouts.find(x=>x.id===id):null;
   $("workoutDialogTitle").textContent=w?"Edit workout":"Log workout";
-  $("workoutDate").value=w?.date||today();
-  $("workoutName").value=w?.name||"";
+ $("workoutDate").value=w?w.date:($("workoutDate").value||today());
+$("workoutName").value=w?(w.name||""):$("workoutName").value;
   $("exerciseName").value=w?.exercise||"";
   $("workoutNotes").value=w?.notes||"";
   state.sets=w?JSON.parse(JSON.stringify(w.sets)): [{weight:"",reps:"",rir:"2"}];
