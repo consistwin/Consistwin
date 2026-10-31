@@ -202,7 +202,7 @@ function monthCalendar(month,year,compact=false) {
 }
 function renderCalendar() {
   const months=Array.from({length:12},(_,m)=>`<div class="year-month"><h3>${new Date(state.year,m,1).toLocaleDateString(undefined,{month:"long"})}</h3>${monthCalendar(m,state.year,true)}</div>`).join("");
-  const ids=["Gym","Study","Reading","Cardio","Sleep","Work","Personal"];
+  const ids=["Gym","Personal"];
   const options=ids.map(x=>`<option ${state.calendarId===x?"selected":""}>${x}</option>`).join("");
   const day=state.selectedDate;
   const activities=state.activities[day]||[];
