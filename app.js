@@ -214,7 +214,7 @@ function renderCalendar() {
     <div class="list-item"><div class="item-main"><strong>Missed day</strong><small>Use only when you want to record a missed/rest day.</small></div><button class="secondary" onclick="markMissed('${day}','${state.calendarId}')">${state.misses[day]?.[state.calendarId]?"Undo":"Mark missed"}</button></div>
     <h3>All activities for this date</h3>${activities.length?activities.map(a=>`<div class="pill">${escapeHTML(a)}</div>`).join(" "):empty("No activities completed on this date.")}
     <label>Choose date<input type="date" value="${day}" onchange="state.selectedDate=this.value;render()"></label>`)}
-  </div><p class="small">Green = completed. Red dot = explicitly marked missed. Blank = rest, not recorded, or unknown. Your activity calendars are tracked separately.</p>`;
+  </div><p class="small">Green = completed. Red dot = explicitly marked missed.</p>`;
 }
 window.calendarYear=false;
 function toggleCalendarView(){window.calendarYear=!window.calendarYear;render();}
