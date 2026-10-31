@@ -282,3 +282,17 @@ footer span{color:var(--green)}
      1px  1px 0 #000;
 }
 .day.done::after { display: none; }  /* hides the tick */
+.cal-cell.done {
+  background: #c4f13a !important;
+  border-color: #c4f13a !important;
+  color: #fff !important;
+  -webkit-text-stroke: 1.5px #000;
+  paint-order: stroke fill;
+  text-shadow:
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
+}
+.cal-cell.done::after,
+.cal-cell.done::before { display: none; }
