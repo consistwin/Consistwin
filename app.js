@@ -44,6 +44,7 @@ function save() {
     activities:state.activities,workouts:state.workouts,misses:state.misses,
     rests:state.rests
   }));
+  checkLevelUp();
 }
 function toast(msg) {
   $("toast").textContent=msg;
@@ -140,7 +141,7 @@ function renderDashboard() {
       ${checked?'<span class="pill">DONE</span>':""}</div>`;
   }).join(""):empty("Add your first routine to start tracking consistency.");
   const latest=recentWorkouts().slice(0,4);
-  return `<div class="grid stats">
+  return `${levelBanner()}<div class="grid stats">
     ${stat("TODAY'S ROUTINES",`${done}/${total}`,total?"Daily completion":"Create your first routine","✓")}
     ${stat("COMPLETION",pct+"%", "Today's routine progress","◉")}
     ${stat("WORKOUTS · 7 DAYS",weekly,"Logged in the last 7 days","↗")}
@@ -152,7 +153,8 @@ function renderDashboard() {
     <div class="panel"><div class="panel-head"><h2>Recent workouts</h2><button class="secondary" onclick="showPage('workouts')">View all</button></div>
     ${latest.length?latest.map(w=>`<div class="list-item"><div class="item-main"><strong>${escapeHTML(w.exercise)}</strong><small>${escapeHTML(w.name)} · ${escapeHTML(w.date)}</small></div><span class="pill">${Math.round(workoutVolume(w)).toLocaleString()} kg vol.</span></div>`).join(""):empty("Your workout history will appear here.")}</div>
     ${panel("Your next step",`<div class="stack"><div class="row"><div><strong>Track a session</strong><div class="small">Record exercises and sets.</div></div><button class="secondary" onclick="openWorkout()">Log →</button></div><div class="row"><div><strong>Review your progress</strong><div class="small">Check estimated strength and PRs.</div></div><button class="secondary" onclick="showPage('progress')">Review →</button></div><div class="row"><div><strong>Plan your consistency</strong><div class="small">Mark training and rest days.</div></div><button class="secondary" onclick="showPage('calendar')">Calendar →</button></div></div>`)}
-  </div>`;
+  </div>
+  ${badgesPanel()}`;
 }
 
 /* ROUTINES */
@@ -505,6 +507,221 @@ function resetData() {
   if(!confirm("Permanently clear all Consistwin routines, calendars, and workouts from this browser? Export a backup first if you want to keep them."))return;
   state.routines=[];state.completions={};state.activities={};state.workouts=[];state.misses={};state.rests={};save();render();toast("App data reset");
 }
+
+/* ===================== LEVEL UP SYSTEM ===================== */
+const LEVEL_CSS=`
+.level-card{margin-bottom:18px;background:linear-gradient(135deg,#1b241b,#121513 70%);border-color:#344232}
+.level-top{display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.level-badge{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:var(--green);color:#10150c;font-size:26px;font-weight:950;flex-shrink:0}
+.level-top h2{font-size:22px;margin:0}
+.level-top .eyebrow{margin:0 0 2px}
+.level-card .progress-track{height:10px;margin-bottom:10px}
+.badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.badge-item{border:1px solid var(--line);border-radius:12px;padding:12px;background:#0f1210}
+.badge-item strong{display:block;font-size:13px}
+.badge-item small{display:block;color:var(--muted);font-size:11px}
+.badge-icon{font-size:22px;display:block;margin-bottom:6px;color:var(--green)}
+.badge-item.locked{opacity:.4;filter:grayscale(1)}
+.badge-item.got{border-color:#3f6633;background:#142014}
+.badges-wrap{margin-top:16px}
+.coach-reply p{color:var(--text);margin:8px 0}
+.levelup{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:rgba(0,0,0,.78);backdrop-filter:blur(4px);animation:luFade .25s ease}
+.levelup-card{position:relative;overflow:hidden;text-align:center;background:var(--panel);border:1px solid #3f6633;border-radius:22px;padding:34px 40px;width:min(360px,calc(100% - 32px));animation:luPop .45s cubic-bezier(.2,1.4,.4,1)}
+.levelup-card>*{position:relative;z-index:1}
+.levelup-num{font-size:96px;line-height:1;font-weight:950;color:var(--green);letter-spacing:-4px;margin:6px 0}
+.levelup-card h2{margin:0 0 6px;font-size:22px}
+.levelup-card p{color:var(--muted);margin:4px 0}
+.levelup-card .primary{margin-top:14px}
+.confetti{position:absolute;top:-16px;width:8px;height:14px;border-radius:2px;background:var(--green);animation:luFall 2.4s linear infinite;z-index:0}
+.confetti:nth-child(even){background:#f2f5f2;width:6px;height:10px}
+@keyframes luFade{from{opacity:0}to{opacity:1}}
+@keyframes luPop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes luFall{to{transform:translateY(460px) rotate(540deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){.levelup,.levelup-card,.confetti{animation:none}}
+`;
+(function injectLevelCSS(){
+  const s=document.createElement("style");
+  s.textContent=LEVEL_CSS;
+  document.head.appendChild(s);
+})();
+
+const RANKS=[[1,"Rookie"],[2,"Regular"],[4,"Grinder"],[6,"Iron Soul"],[8,"Beast"],[11,"Machine"],[15,"Legend"]];
+function rankName(level){return [...RANKS].reverse().find(r=>level>=r[0])[1];}
+function routineCompletions(){
+  return Object.values(state.completions).reduce((n,a)=>n+(a?.length||0),0);
+}
+function activityDays(){
+  return Object.values(state.activities).reduce((n,a)=>n+(a?.length||0),0);
+}
+function restDaysCount(){
+  return Object.values(state.rests).reduce((n,o)=>n+Object.values(o||{}).filter(Boolean).length,0);
+}
+function totalVolume(){
+  return state.workouts.reduce((n,w)=>n+workoutVolume(w),0);
+}
+/* XP is calculated from your data, so it always matches what you logged. */
+function xpTotal(){
+  return state.workouts.length*50+activityDays()*30+routineCompletions()*10+uniqueExercises().length*25;
+}
+function levelInfo(xp=xpTotal()){
+  const level=Math.floor(Math.sqrt(xp/100))+1;
+  const start=100*(level-1)**2,next=100*level**2;
+  return {level,xp,start,next,toNext:next-xp,pct:Math.max(0,Math.min(100,(xp-start)/(next-start)*100)),rank:rankName(level)};
+}
+function longestStreak(){
+  const act=new Set([...workoutDays(),...Object.keys(state.completions).filter(d=>state.completions[d]?.length)]);
+  if(!act.size)return 0;
+  const d=new Date([...act].sort()[0]+"T12:00:00"),end=localDate(new Date());
+  let run=0,best=0;
+  while(localDate(d)<=end){
+    const k=localDate(d);
+    if(act.has(k)){run++;best=Math.max(best,run);}
+    else if(!isRestDay(k))run=0;
+    d.setDate(d.getDate()+1);
+  }
+  return best;
+}
+function badgeList(){
+  const w=state.workouts.length,s=longestStreak();
+  return [
+    {n:"First Rep",d:"Log your first workout",ok:w>=1},
+    {n:"Warming Up",d:"Log 5 workouts",ok:w>=5},
+    {n:"Dedicated",d:"Log 25 workouts",ok:w>=25},
+    {n:"3-Day Streak",d:"Show up 3 days in a row",ok:s>=3},
+    {n:"7-Day Streak",d:"Show up 7 days in a row",ok:s>=7},
+    {n:"30-Day Streak",d:"Show up 30 days in a row",ok:s>=30},
+    {n:"Iron Tonnage",d:"Move 10,000 kg in total",ok:totalVolume()>=10000},
+    {n:"Variety Pack",d:"Log 5 different exercises",ok:uniqueExercises().length>=5},
+    {n:"Rest Smart",d:"Mark 3 rest days",ok:restDaysCount()>=3},
+    {n:"Habit Builder",d:"Complete 10 routines",ok:routineCompletions()>=10}
+  ];
+}
+function levelBanner(){
+  const L=levelInfo();
+  return `<section class="panel level-card"><div class="level-top"><div class="level-badge">${L.level}</div><div class="item-main"><p class="eyebrow">LEVEL ${L.level} · ${escapeHTML(L.rank.toUpperCase())}</p><h2>${L.xp.toLocaleString()} XP</h2></div><span class="pill">${L.toNext.toLocaleString()} XP to level ${L.level+1}</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:${L.pct.toFixed(1)}%"></div></div>
+  <p class="small">+50 XP per workout · +30 per calendar day done · +10 per routine · +25 per new exercise</p></section>`;
+}
+function badgesPanel(){
+  const list=badgeList(),got=list.filter(b=>b.ok).length;
+  return `<div class="badges-wrap">${panel(`Badges · ${got}/${list.length}`,`<div class="badge-grid">${list.map(b=>`<div class="badge-item ${b.ok?"got":"locked"}"><span class="badge-icon">★</span><strong>${escapeHTML(b.n)}</strong><small>${escapeHTML(b.d)}</small></div>`).join("")}</div>`)}</div>`;
+}
+function showLevelUp(info){
+  const old=document.getElementById("levelUp");if(old)old.remove();
+  const o=document.createElement("div");
+  o.id="levelUp";o.className="levelup";
+  const quote=state.coach==="old"?"That's what showing up gets you.":"Consistency compounds. Keep going.";
+  const confetti=Array.from({length:18},(_,i)=>`<i class="confetti" style="left:${(i*5.7+3)%100}%;animation-delay:${(i%6)*0.25}s"></i>`).join("");
+  o.innerHTML=`<div class="levelup-card">${confetti}<p class="eyebrow">LEVEL UP</p><div class="levelup-num">${info.level}</div><h2>${escapeHTML(info.rank)}</h2><p>${quote}</p><button class="primary" onclick="document.getElementById('levelUp').remove()">Keep going</button></div>`;
+  o.addEventListener("click",e=>{if(e.target===o)o.remove();});
+  document.body.appendChild(o);
+}
+function checkLevelUp(){
+  try{
+    const info=levelInfo();
+    const prev=Number(localStorage.getItem("consistwin-level"));
+    localStorage.setItem("consistwin-level",String(info.level));
+    if(prev&&info.level>prev)showLevelUp(info);
+    let seen=null;
+    try{seen=JSON.parse(localStorage.getItem("consistwin-badges"));}catch{}
+    const have=badgeList().filter(b=>b.ok).map(b=>b.n);
+    localStorage.setItem("consistwin-badges",JSON.stringify(have));
+    if(Array.isArray(seen)){
+      const fresh=have.filter(n=>!seen.includes(n));
+      if(fresh.length)setTimeout(()=>toast("Badge unlocked: "+fresh.join(", ")),2400);
+    }
+  }catch{}
+}
+
+/* ===================== TALKING COACHES ===================== */
+function daysAgo(date){
+  return Math.round((new Date(today()+"T12:00:00")-new Date(date+"T12:00:00"))/86400000);
+}
+function latestWorkout(ex){
+  return state.workouts.filter(w=>w.exercise.toLowerCase()===ex.toLowerCase()&&(w.sets||[]).length)
+    .sort((a,b)=>b.date.localeCompare(a.date)||(b.createdAt||0)-(a.createdAt||0))[0]||null;
+}
+function coachStats(){
+  const ws=state.workouts;
+  const lastDate=ws.map(w=>w.date).sort().pop()||null;
+  const inRange=(w,a,b)=>{const n=daysAgo(w.date);return n>=a&&n<=b;};
+  const vol=(a,b)=>ws.filter(w=>inRange(w,a,b)).reduce((n,w)=>n+workoutVolume(w),0);
+  const days=(a,b)=>new Set(ws.filter(w=>inRange(w,a,b)).map(w=>w.date)).size;
+  let focus=null;
+  uniqueExercises().forEach(ex=>{
+    const byDate={};
+    allSets(ex).forEach(s=>{
+      const e=estimate1RM(s.weight,s.reps);
+      if(e&&(!byDate[s.date]||e>byDate[s.date]))byDate[s.date]=e;
+    });
+    const dates=Object.keys(byDate).sort();
+    if(dates.length<2)return;
+    const vals=dates.map(d=>byDate[d]);
+    const last=vals[vals.length-1],prev=vals[vals.length-2],recent=vals.slice(-3);
+    const item={ex,pct:(last-prev)/prev*100,plateau:vals.length>=3&&Math.max(...recent)-Math.min(...recent)<0.5,lastDate:dates[dates.length-1]};
+    if(!focus||item.lastDate>focus.lastDate)focus=item;
+  });
+  return {n:ws.length,lastDate,daysSince:lastDate?daysAgo(lastDate):null,d7:days(0,6),v7:vol(0,6),vPrev:vol(7,13),focus,streak:dayStreak()};
+}
+function coachAdvice(which){
+  const c=coachStats(),L=levelInfo(),old=which==="old";
+  const head=`<strong>Level ${L.level} · ${escapeHTML(L.rank)}</strong>`;
+  const wrap=p=>`<div class="coach-message coach-reply">${head}${p.map(x=>`<p>${x}</p>`).join("")}</div>`;
+  if(!c.n){
+    return wrap([old
+      ?"Zero workouts logged. Nobody got strong sitting on the couch. Log your first session and show up."
+      :"There is no data yet. Log one session and I can give you feedback based on your numbers. Start with 2 to 3 hard sets per exercise, stopping 1 to 3 reps before failure."]);
+  }
+  const p=[];
+  const change=c.vPrev>0?(c.v7-c.vPrev)/c.vPrev*100:null;
+  const f=c.focus,fx=f?escapeHTML(f.ex):"";
+  const pct=f?Math.abs(f.pct).toFixed(1):"";
+  if(old){
+    const since=c.daysSince;
+    p.push((since===0?"You trained today. That's what I like to see."
+      :since===1?"Last session was yesterday. Don't let it be a one-off."
+      :since>=4?`It's been ${since} days since you lifted. Excuses don't build muscle. Get to the gym.`
+      :`Last session was ${since} days ago. Time to go again.`)
+      +(c.streak>=3?` ${c.streak} days in a row. Keep stacking them.`:""));
+    if(change===null)p.push("Build the habit first: show up on the same days every week.");
+    else if(change>25)p.push(`You moved ${Math.round(change)}% more weight than last week. That's what I'm talking about.`);
+    else if(change<-25)p.push(`Volume's down ${Math.round(-change)}% from last week. Pick it back up.`);
+    else p.push("Same work as last week. Now push a little harder.");
+    if(f){
+      if(f.plateau)p.push(`${fx} hasn't moved in 3 sessions. Time to grind: add a rep, add a plate, and sleep and eat like you mean it.`);
+      else if(f.pct>0.5)p.push(`${fx} is up ${pct}%. Strength comes from showing up and pushing a little harder every time.`);
+      else if(f.pct<-0.5)p.push(`${fx} went down. Happens. Don't sulk. Come back and beat it with clean form.`);
+      else p.push(`${fx} is flat since last time. Give me one more rep.`);
+    }
+  } else {
+    p.push(c.d7>=3?`You trained on ${c.d7} days in the last week, a solid frequency. Training each muscle about twice a week is a good default.`
+      :c.d7>=1?`You trained on ${c.d7} day${c.d7>1?"s":""} in the last week. Aim for at least two sessions per muscle group each week if your schedule allows.`
+      :"No sessions in the last 7 days. Restart small: one short session beats waiting for the perfect plan.");
+    if(change===null)p.push("Once you have two weeks of data, I can compare your weekly volume.");
+    else if(change>25)p.push(`Your volume is up ${Math.round(change)}% on last week. Big jumps add fatigue, so keep most sets 1 to 3 reps from failure and watch your recovery.`);
+    else if(change<-25)p.push(`Your volume is down ${Math.round(-change)}% from last week. That's fine if it was a planned lighter week. Otherwise check sleep and food.`);
+    else p.push("Your volume is steady compared with last week, which is what consistent progress looks like.");
+    if(f){
+      if(f.plateau)p.push(`${fx} has been flat for 3 sessions. Check sleep, protein and effort first, then try adding a set or swapping to a close variation.`);
+      else if(f.pct>0.5)p.push(`${fx}: estimated 1RM is up ${pct}% since the previous session. Keep using double progression: add reps first, then weight.`);
+      else if(f.pct<-0.5)p.push(`${fx} dipped about ${pct}% last session. One lower session is normal day-to-day variation. If it repeats, consider a lighter week.`);
+      else p.push(`${fx} is about the same as last session. Try for one more rep next time.`);
+    } else p.push("Log the same exercise on at least two different days and I can track its trend.");
+    if(c.streak>=7)p.push(`${c.streak} days in a row. Plan a rest day soon. Recovery is when muscle is actually built.`);
+  }
+  const target=latestWorkout(f?f.ex:state.workouts[state.workouts.length-1].exercise);
+  if(target)p.push(`Next session on ${escapeHTML(target.exercise)}: ${beatTarget(target).replace("Aim for","aim for")}.`);
+  if(old)p.push(`Level ${L.level+1} is ${L.toNext.toLocaleString()} XP away. Train hard, keep your form clean, and go get it.`);
+  return wrap(p);
+}
+function openCoach(which){
+  state.coach=which;
+  $("coachTitle").textContent=(which==="old"?"Old-School Coach":"Science-Based Coach")+" says";
+  $("coachContent").innerHTML=coachAdvice(which);
+  $("coachContent").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+/* First load: remember the current level and badges so you don't get a fake level-up. */
+if(localStorage.getItem("consistwin-level")===null)checkLevelUp();
 
 /* START */
 render();
