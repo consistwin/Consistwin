@@ -335,6 +335,3 @@ div:has(> .coach-card) {
   min-width: 0;
   height: 100%;
 }
-@media (max-width: 800px) {
-  div:has(> .coach-card) { grid-template-columns: 1fr !important; }
-}
