@@ -319,3 +319,11 @@ footer span{color:var(--green)}
   color: #fff !important;
   font-weight: 800;
 }
+.cal-cell.missed::before,
+.cal-cell.missed::after,
+.cal-cell.missed .dot,
+.cal-cell.missed .miss-dot,
+.cal-cell.missed .missed-dot,
+.cal-cell.missed span {
+  display: none !important;
+}
