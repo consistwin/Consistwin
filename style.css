@@ -336,3 +336,10 @@ div:has(> .coach-card) {
   height: 100%;
 }
 :root { color-scheme: dark; }
+.cal-cell.rest {
+  background: #2f6fed !important;
+  border-color: #2f6fed !important;
+  color: #fff !important;
+  font-weight: 800;
+}
+#lastHint[hidden] { display: none; }
