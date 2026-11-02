@@ -326,3 +326,12 @@ footer span{color:var(--green)}
 .cal-cell.missed .missed-dot {
   display: none !important;
 }
+div:has(> .coach-card) {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 20px;
+}
+.coach-card {
+  min-width: 0;
+  height: 100%;
+}
