@@ -323,7 +323,6 @@ footer span{color:var(--green)}
 .cal-cell.missed::after,
 .cal-cell.missed .dot,
 .cal-cell.missed .miss-dot,
-.cal-cell.missed .missed-dot,
-.cal-cell.missed span {
+.cal-cell.missed .missed-dot {
   display: none !important;
 }
