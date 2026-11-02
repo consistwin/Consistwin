@@ -422,3 +422,15 @@ function resetData() {
 
 /* START */
 render();
+const _markActivity = markActivity;
+markActivity = function (day, id, done) {
+  if (done && state.misses[day]) delete state.misses[day][id];
+  _markActivity(day, id, done);
+};
+
+const _markMissed = markMissed;
+markMissed = function (day, id) {
+  const willMiss = !state.misses[day]?.[id];
+  if (willMiss && isMarkedDone(day)) markActivity(day, id, false);
+  _markMissed(day, id);
+};
