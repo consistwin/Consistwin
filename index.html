@@ -318,7 +318,7 @@ function reply(q){
   if(/rest|sleep|recover/.test(q))return"Rest 2 to 3 minutes between heavy compound sets and 1 to 2 minutes for lighter work. Aim for 7 to 9 hours of sleep. Recovery is where the gains happen.";
   return"I can help with: what to train next, how you’re doing, your PRs, RIR, 1RM, sets and reps, or rest. Try a button below.";
 }
-var COACH_URL=""; // paste your Cloudflare Worker URL here to turn on the AI coach
+var COACH_URL="https://consistwin.ericehab689.workers.dev"; // paste your Cloudflare Worker URL here to turn on the AI coach
 var hist=[];
 function ctx(){var ws=weekStart(T),n=0;for(var i=0;i<7;i++){var x=new Date(ws);x.setDate(x.getDate()+i);if(st(ds(x))==="attended")n++}
   var b=Object.keys(A.best).map(function(k){return k+" "+f1(A.best[k])}).join(", ");
