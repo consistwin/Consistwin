@@ -1,87 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b0d0c">
-  <meta name="color-scheme" content="dark">
-  <title>Consistwin — Show Up. Level Up.</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ironlog – Simple gym tracking</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#050505;--card:#111312;--text:#f2f4f7;--muted:#8b93a1;--line:#22272b;--accent:#22e06b;--miss:#ff5c61;--accent-ink:#04130a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#050505;--card:#111312;--text:#f2f4f7;--muted:#8b93a1;--line:#22272b;--accent:#22e06b;--miss:#ff5c61;--accent-ink:#04130a}}
+:root[data-theme="dark"]{--bg:#050505;--card:#111312;--text:#f2f4f7;--muted:#8b93a1;--line:#22272b;--accent:#22e06b;--miss:#ff5c61;--accent-ink:#04130a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0;font-weight:700}
+nav span{color:var(--accent)}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;padding:12px 22px;border-radius:999px;font-weight:700;font-size:1rem;text-decoration:none;display:inline-block}
+.hero{display:grid;gap:32px;padding:32px 0 56px;align-items:center}
+@media(min-width:760px){.hero{grid-template-columns:1.1fr 1fr}}
+h1{font-size:clamp(2.2rem,7vw,3.6rem);line-height:1.05;margin:0 0 16px;letter-spacing:-.02em}
+h1 em{font-style:normal;color:var(--accent)}
+p.lead{color:var(--muted);font-size:1.1rem;margin:0 0 24px}
+.phone{background:var(--card);border:1px solid var(--line);border-radius:36px;padding:18px;max-width:340px;margin:0 auto;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+.phone h3{margin:4px 4px 12px;font-size:1rem}
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cal-head b{font-size:1.05rem}
+.nav-btn{background:transparent;border:1px solid var(--line);color:var(--text);width:34px;height:34px;border-radius:50%;font-size:1rem;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.dow{text-align:center;font-size:.7rem;color:var(--muted);padding-bottom:2px}
+.day{aspect-ratio:1;border-radius:50%;border:0;background:transparent;color:var(--muted);font-size:.85rem;font-weight:600;cursor:default;padding:0}
+.day.past{cursor:pointer}
+.day.attended{background:var(--accent);color:var(--accent-ink)}
+.day.missed{background:var(--miss);color:#fff}
+.day.today{outline:2px solid var(--text);outline-offset:2px}
+.legend{display:flex;gap:16px;margin-top:14px;font-size:.8rem;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.stats{display:flex;gap:10px;margin-top:14px}
+.stat{flex:1;background:var(--bg);border-radius:14px;padding:10px;text-align:center}
+.stat b{display:block;font-size:1.3rem}
+.stat small{color:var(--muted)}
+.cards{display:grid;gap:14px;padding-bottom:56px}
+@media(min-width:760px){.cards{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px}
+.card h4{margin:0 0 6px;font-size:1.1rem}
+.card p{margin:0;color:var(--muted)}
+.cta{text-align:center;padding:24px 0 56px}
+.cta h2{font-size:2rem;margin:0 0 16px}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding-bottom:32px}
+</style>
 </head>
 <body>
- <button class="menu-btn" onclick="document.body.classList.toggle('menu-open')">☰ Menu</button>
-<div class="menu-backdrop" onclick="document.body.classList.remove('menu-open')"></div>
-<aside class="sidebar" onclick="document.body.classList.remove('menu-open')">
-    <a class="brand" href="#" onclick="showPage('dashboard');return false">
-      <span class="brand-icon">C</span>
-      <span>consist<span class="green">win</span><small>BUILT BY CONSISTENCY</small></span>
-    </a>
-    <p class="nav-label">WORKSPACE</p>
-    <button class="nav active" data-page="dashboard">▦ <span>Dashboard</span></button>
-    <button class="nav" data-page="routines">✓ <span>Daily routines</span></button>
-    <button class="nav" data-page="calendar">▦ <span>Activity calendars</span></button>
-    <button class="nav" data-page="workouts">↗ <span>Workout tracker</span></button>
-    <button class="nav" data-page="progress">⌁ <span>Progress & PRs</span></button>
-    <button class="nav" data-page="coaches">✦ <span>Coaches</span></button>
-    <div class="sidebar-bottom">
-      <div class="mini-status"><span class="status-dot"></span> Your consistency journey</div>
-      <button class="nav" data-page="settings">⚙ <span>Settings & backup</span></button>
+<div class="wrap">
+  <nav><div>Iron<span>log</span></div><a class="btn" href="#get">Get the app</a></nav>
+
+  <section class="hero">
+    <div>
+      <h1>Show up. <em>Track it.</em> Repeat.</h1>
+      <p class="lead">A simple workout tracker with no noise. Log your lifts, see every day you trained, and keep the streak alive.</p>
+      <a class="btn" href="#get">Download free</a>
     </div>
-  </aside>
-  <main class="main">
-    <header class="topbar">
-      <div>
-        <p class="eyebrow" id="todayLabel">YOUR JOURNEY STARTS HERE</p>
-        <h1 id="pageTitle">Dashboard</h1>
+
+    <div class="phone" aria-label="Attendance calendar">
+      <h3>Your attendance</h3>
+      <div class="cal-head">
+        <button class="nav-btn" id="prev" aria-label="Previous month">‹</button>
+        <b id="title"></b>
+        <button class="nav-btn" id="next" aria-label="Next month">›</button>
       </div>
-      <div class="top-actions">
-        <span class="today-chip" id="dateChip"></span>
-        <button class="primary" onclick="openWorkout()">+ Log workout</button>
+      <div class="grid" id="dows"></div>
+      <div class="grid" id="days"></div>
+      <div class="legend">
+        <span><i style="background:var(--accent)"></i>Attended</span>
+        <span><i style="background:var(--miss)"></i>Missed</span>
+        <span>Tap a past day to switch</span>
       </div>
-    </header>
-    <div id="app"></div>
-    <footer>CONSISTWIN <span>·</span> SHOW UP. LEVEL UP.</footer>
-  </main>
-  <dialog id="workoutDialog">
-    <form id="workoutForm">
-      <div class="dialog-head">
-        <div><p class="eyebrow">TRAINING LOG</p><h2 id="workoutDialogTitle">Log workout</h2></div>
-        <button type="button" class="icon-btn" onclick="closeWorkout()">✕</button>
+      <div class="stats">
+        <div class="stat"><b id="sAtt">0</b><small>Attended</small></div>
+        <div class="stat"><b id="sMiss">0</b><small>Missed</small></div>
+        <div class="stat"><b id="sStreak">0</b><small>Streak</small></div>
       </div>
-      <label>Date<input id="workoutDate" type="date" required></label>
-      <label>Workout name<input id="workoutName" placeholder="e.g. Chest & biceps" required></label>
-      <label>Exercise / machine<input id="exerciseName" placeholder="e.g. Barbell bench press" required></label>
-      <div id="setsEditor"></div>
-      <button type="button" class="secondary full" onclick="addSet()">+ Add set</button>
-      <label>Notes<textarea id="workoutNotes" placeholder="Technique, energy, how the session felt…"></textarea></label>
-      <div class="dialog-actions">
-        <button type="button" class="secondary" onclick="closeWorkout()">Cancel</button>
-        <button type="submit" class="primary">Save workout</button>
-      </div>
-    </form>
-  </dialog>
-  <dialog id="routineDialog">
-    <form id="routineForm">
-      <div class="dialog-head">
-        <div><p class="eyebrow">BUILD CONSISTENCY</p><h2>New routine</h2></div>
-        <button type="button" class="icon-btn" onclick="document.getElementById('routineDialog').close()">✕</button>
-      </div>
-      <label>Routine name<input id="routineName" placeholder="e.g. Hit the gym" required></label>
-      <label>Category
-        <select id="routineCategory">
-         <option value="Fitness">Gym</option><option>Personal</option>
-        </select>
-      </label>
-      <div class="dialog-actions">
-        <button type="button" class="secondary" onclick="document.getElementById('routineDialog').close()">Cancel</button>
-        <button type="submit" class="primary">Create routine</button>
-      </div>
-    </form>
-  </dialog>
-  <input id="importFile" type="file" accept="application/json,.json" hidden>
-  
-  <div id="toast" role="status"></div>
-  <script src="app.js"></script>
+    </div>
+  </section>
+
+  <section class="cards">
+    <div class="card"><h4>Fast logging</h4><p>Sets, reps and weight in a few taps.</p></div>
+    <div class="card"><h4>Rest timers</h4><p>Automatic timers for every exercise.</p></div>
+    <div class="card"><h4>Clear progress</h4><p>Charts and streaks that keep you honest.</p></div>
+  </section>
+
+  <section class="cta" id="get">
+    <h2>Ready to start?</h2>
+    <a class="btn" href="#get">Download free</a>
+  </section>
+  <footer>© 2026 Ironlog</footer>
+</div>
+
+<script>
+(function(){
+  var today=new Date();today.setHours(0,0,0,0);
+  var view=new Date(today.getFullYear(),today.getMonth(),1);
+  var marks={}; // "YYYY-M-D" -> "attended" | "missed"
+  var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var key=function(y,m,d){return y+"-"+m+"-"+d};
+
+  // Seed past days with sample data (3-4 sessions a week pattern)
+  function seed(y,m){
+    var n=new Date(y,m+1,0).getDate();
+    for(var d=1;d<=n;d++){
+      var dt=new Date(y,m,d);
+      if(dt>today)break;
+      var k=key(y,m,d);
+      if(!(k in marks)){marks[k]=((d*7+m*3)%10)<6?"attended":"missed";}
+    }
+  }
+
+  var dows=document.getElementById("dows");
+  ["S","M","T","W","T","F","S"].forEach(function(c){var e=document.createElement("div");e.className="dow";e.textContent=c;dows.appendChild(e)});
+
+  function render(){
+    var y=view.getFullYear(),m=view.getMonth();
+    seed(y,m);
+    document.getElementById("title").textContent=months[m]+" "+y;
+    var box=document.getElementById("days");box.innerHTML="";
+    var first=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate();
+    for(var i=0;i<first;i++)box.appendChild(document.createElement("div"));
+    for(var d=1;d<=n;d++){
+      var dt=new Date(y,m,d),k=key(y,m,d);
+      var b=document.createElement("button");
+      b.textContent=d;b.className="day";
+      if(dt<=today){
+        b.classList.add("past",marks[k]);
+        b.setAttribute("aria-label",d+" "+months[m]+": "+marks[k]);
+        (function(k){b.onclick=function(){marks[k]=marks[k]==="attended"?"missed":"attended";render()}})(k);
+      } else {b.disabled=true}
+      if(dt.getTime()===today.getTime())b.classList.add("today");
+      box.appendChild(b);
+    }
+    var a=0,x=0;
+    for(var d2=1;d2<=n;d2++){var v=marks[key(y,m,d2)];if(v==="attended")a++;else if(v==="missed")x++}
+    document.getElementById("sAtt").textContent=a;
+    document.getElementById("sMiss").textContent=x;
+    // streak: consecutive attended days ending at latest tracked day
+    var s=0,c=new Date(today);
+    for(var g=0;g<400;g++){
+      var kk=key(c.getFullYear(),c.getMonth(),c.getDate());
+      if(!(kk in marks)){seed(c.getFullYear(),c.getMonth());}
+      if(marks[kk]==="attended")s++;else break;
+      c.setDate(c.getDate()-1);
+    }
+    document.getElementById("sStreak").textContent=s;
+  }
+  document.getElementById("prev").onclick=function(){view=new Date(view.getFullYear(),view.getMonth()-1,1);render()};
+  document.getElementById("next").onclick=function(){view=new Date(view.getFullYear(),view.getMonth()+1,1);render()};
+  render();
+})();
+</script>
 </body>
 </html>
-
