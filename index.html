@@ -123,7 +123,7 @@ label{font-size:.75rem;color:var(--muted);display:block;margin-bottom:4px}
 </section>
 
 <section id="coach" class="hide"><div class="card">
-  <h3>Coach</h3><p class="muted" style="margin:0 0 12px">Works offline from your own logs. It isn’t a live AI model.</p>
+  <h3>Coach</h3><p class="muted" style="margin:0 0 12px">Ask about training, form, programming and your logs. Uses AI when connected, basic offline answers otherwise.</p>
   <div class="chat" id="chat"></div>
   <div class="row" style="margin:12px 0"><button class="chipb" data-q="What should I train next?">Train next?</button><button class="chipb" data-q="How am I doing?">How am I doing?</button><button class="chipb" data-q="My PRs">My PRs</button><button class="chipb" data-q="What is RIR?">What is RIR?</button></div>
   <div class="row nw"><input id="cIn" placeholder="Ask your coach…"><button class="btn sm" id="cGo">Send</button></div>
@@ -296,7 +296,7 @@ function calc(){
 ["rW","rR","rN"].forEach(function(i){$(i).oninput=calc});
 
 // ---------- coach (offline, rule-based)
-function say(t,me){var d=document.createElement("div");d.className="msg "+(me?"me":"bot");d.textContent=t;$("chat").appendChild(d);$("chat").scrollTop=1e6}
+function say(t,me){var d=document.createElement("div");d.className="msg "+(me?"me":"bot");d.textContent=t;$("chat").appendChild(d);$("chat").scrollTop=1e6;return d}
 function reply(q){
   q=q.toLowerCase();
   if(/next|train|today|what should/.test(q)){
@@ -318,7 +318,19 @@ function reply(q){
   if(/rest|sleep|recover/.test(q))return"Rest 2 to 3 minutes between heavy compound sets and 1 to 2 minutes for lighter work. Aim for 7 to 9 hours of sleep. Recovery is where the gains happen.";
   return"I can help with: what to train next, how you’re doing, your PRs, RIR, 1RM, sets and reps, or rest. Try a button below.";
 }
-function ask(q){q=q.trim();if(!q)return;say(q,true);say(reply(q));$("cIn").value=""}
+var COACH_URL=""; // paste your Cloudflare Worker URL here to turn on the AI coach
+var hist=[];
+function ctx(){var ws=weekStart(T),n=0;for(var i=0;i<7;i++){var x=new Date(ws);x.setDate(x.getDate()+i);if(st(ds(x))==="attended")n++}
+  var b=Object.keys(A.best).map(function(k){return k+" "+f1(A.best[k])}).join(", ");
+  var rc=[];for(var j=0;j<7;j++){var y=new Date(T);y.setDate(y.getDate()-j);var L=D.w[ds(y)]||[];if(L.length)rc.push(ds(y)+": "+L.map(function(e){return e.n+" "+(e.w||0)+"x"+e.r+(e.i!==""&&e.i!==undefined?" @"+e.i+"RIR":"")}).join("; "))}
+  return"Streak "+A.cur+" days (best "+A.bs+"). This week "+n+"/"+D.g+" sessions. Best estimated 1RMs: "+(b||"none")+". Last 7 days: "+(rc.join(" | ")||"nothing logged")+". Today is "+TS+"."}
+function ask(q){q=q.trim();if(!q)return;say(q,true);$("cIn").value="";
+  if(!COACH_URL){say(reply(q));return}
+  hist.push({role:"user",content:q});hist=hist.slice(-10);while(hist.length&&hist[0].role!=="user")hist.shift();
+  var b=say("…");
+  fetch(COACH_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:hist,context:ctx()})})
+  .then(function(r){return r.json()}).then(function(j){if(!j.reply)throw 0;b.textContent=j.reply;hist.push({role:"assistant",content:j.reply});$("chat").scrollTop=1e6})
+  .catch(function(){b.textContent=reply(q)})}
 $("cGo").onclick=function(){ask($("cIn").value)};$("cIn").onkeydown=function(e){if(e.key==="Enter")ask(this.value)};
 document.querySelector("#coach .row").onclick=function(e){if(e.target.dataset.q)ask(e.target.dataset.q)};
 say("Hey! I’m your ConsistWin coach. I use your logged workouts to help. What do you want to know?");
