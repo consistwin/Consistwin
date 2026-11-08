@@ -3,156 +3,230 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ironlog – Simple gym tracking</title>
+<title>ConsistWin</title>
 <style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
---bg:#050505;--card:#111312;--text:#f2f4f7;--muted:#8b93a1;--line:#22272b;--accent:#22e06b;--miss:#ff5c61;--accent-ink:#04130a}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#050505;--card:#111312;--text:#f2f4f7;--muted:#8b93a1;--line:#22272b;--accent:#22e06b;--miss:#ff5c61;--accent-ink:#04130a}}
-:root[data-theme="dark"]{--bg:#050505;--card:#111312;--text:#f2f4f7;--muted:#8b93a1;--line:#22272b;--accent:#22e06b;--miss:#ff5c61;--accent-ink:#04130a}
+:root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#050505;--card:#111312;--text:#f2f4f7;--muted:#8b93a1;--line:#22272b;--accent:#22e06b;--miss:#ff5c61;--ink:#04130a}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.5}
-.wrap{max-width:960px;margin:0 auto;padding:0 20px}
-nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0;font-weight:700}
-nav span{color:var(--accent)}
-.btn{background:var(--accent);color:var(--accent-ink);border:0;padding:12px 22px;border-radius:999px;font-weight:700;font-size:1rem;text-decoration:none;display:inline-block}
-.hero{display:grid;gap:32px;padding:32px 0 56px;align-items:center}
-@media(min-width:760px){.hero{grid-template-columns:1.1fr 1fr}}
-h1{font-size:clamp(2.2rem,7vw,3.6rem);line-height:1.05;margin:0 0 16px;letter-spacing:-.02em}
-h1 em{font-style:normal;color:var(--accent)}
-p.lead{color:var(--muted);font-size:1.1rem;margin:0 0 24px}
-.phone{background:var(--card);border:1px solid var(--line);border-radius:36px;padding:18px;max-width:340px;margin:0 auto;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.18)}
-.phone h3{margin:4px 4px 12px;font-size:1rem}
-.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.cal-head b{font-size:1.05rem}
-.nav-btn{background:transparent;border:1px solid var(--line);color:var(--text);width:34px;height:34px;border-radius:50%;font-size:1rem;cursor:pointer}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.4}
+.wrap{max-width:520px;margin:0 auto;padding:0 16px 40px}
+header{padding:18px 0 12px;font-weight:800;font-size:1.4rem;letter-spacing:-.02em}
+header span{color:var(--accent)}
+.tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px;margin-bottom:14px}
+.tabs button{flex:1;border:0;background:transparent;color:var(--muted);padding:10px;border-radius:999px;font-weight:700;font-size:.95rem;cursor:pointer}
+.tabs button.on{background:var(--accent);color:var(--ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row.sb{justify-content:space-between}
+select,input{background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:1rem;min-width:0;width:100%}
+select{width:auto}
+.nb,.seg button{background:transparent;border:1px solid var(--line);color:var(--text);border-radius:50%;width:38px;height:38px;font-size:1.1rem;cursor:pointer}
+.seg{display:flex;gap:4px;margin-bottom:12px}
+.seg button{border-radius:999px;width:auto;padding:0 16px;font-size:.9rem;font-weight:600;color:var(--muted)}
+.seg button.on{border-color:var(--accent);color:var(--accent)}
 .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.dow{text-align:center;font-size:.7rem;color:var(--muted);padding-bottom:2px}
-.day{aspect-ratio:1;border-radius:50%;border:0;background:transparent;color:var(--muted);font-size:.85rem;font-weight:600;cursor:default;padding:0}
-.day.past{cursor:pointer}
-.day.attended{background:var(--accent);color:var(--accent-ink)}
-.day.missed{background:var(--miss);color:#fff}
-.day.today{outline:2px solid var(--text);outline-offset:2px}
-.legend{display:flex;gap:16px;margin-top:14px;font-size:.8rem;color:var(--muted);flex-wrap:wrap}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
-.stats{display:flex;gap:10px;margin-top:14px}
+.dow{text-align:center;font-size:.7rem;color:var(--muted)}
+.day{aspect-ratio:1;border-radius:50%;border:0;background:transparent;color:var(--muted);font-weight:600;font-size:.85rem;padding:0;cursor:pointer}
+.attended{background:var(--accent);color:var(--ink)}
+.missed{background:var(--miss);color:#fff}
+.sel{outline:2px solid var(--text);outline-offset:2px}
+.year{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:480px){.year{grid-template-columns:repeat(3,1fr)}}
+.mini{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px;cursor:pointer}
+.mini b{font-size:.8rem;display:block;margin-bottom:6px}
+.mini .grid{gap:3px}
+.dot{aspect-ratio:1;border-radius:50%;background:#1a1e22}
+.dot.attended{background:var(--accent)}.dot.missed{background:var(--miss)}
+.stats{display:flex;gap:8px;margin-top:14px}
 .stat{flex:1;background:var(--bg);border-radius:14px;padding:10px;text-align:center}
-.stat b{display:block;font-size:1.3rem}
-.stat small{color:var(--muted)}
-.cards{display:grid;gap:14px;padding-bottom:56px}
-@media(min-width:760px){.cards{grid-template-columns:repeat(3,1fr)}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px}
-.card h4{margin:0 0 6px;font-size:1.1rem}
-.card p{margin:0;color:var(--muted)}
-.cta{text-align:center;padding:24px 0 56px}
-.cta h2{font-size:2rem;margin:0 0 16px}
-footer{text-align:center;color:var(--muted);font-size:.85rem;padding-bottom:32px}
+.stat b{display:block;font-size:1.4rem}.stat small{color:var(--muted)}
+.btn{background:var(--accent);color:var(--ink);border:0;border-radius:12px;padding:12px;font-weight:800;font-size:1rem;width:100%;cursor:pointer;margin-top:8px}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.chip{padding:4px 12px;border-radius:999px;font-weight:700;font-size:.8rem}
+label{font-size:.75rem;color:var(--muted);display:block;margin-bottom:4px}
+.ex{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.ex small{color:var(--muted);display:block}
+.ex button{background:none;border:0;color:var(--miss);font-size:1.2rem;cursor:pointer}
+.big{font-size:2.6rem;font-weight:800;color:var(--accent);line-height:1}
+.empty{color:var(--muted);padding:8px 0}
+.pct{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.pct div{background:var(--bg);border-radius:12px;padding:8px;text-align:center}
+.pct small{display:block;color:var(--muted)}
+.hide{display:none}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav><div>Iron<span>log</span></div><a class="btn" href="#get">Get the app</a></nav>
+<header>Consist<span>Win</span></header>
+<div class="tabs" id="tabs">
+  <button data-t="cal" class="on">Calendar</button>
+  <button data-t="log">Workout</button>
+  <button data-t="rm">1RM</button>
+</div>
 
-  <section class="hero">
-    <div>
-      <h1>Show up. <em>Track it.</em> Repeat.</h1>
-      <p class="lead">A simple workout tracker with no noise. Log your lifts, see every day you trained, and keep the streak alive.</p>
-      <a class="btn" href="#get">Download free</a>
+<section id="cal">
+  <div class="card">
+    <div class="seg"><button id="mM" class="on">Month</button><button id="mY">Year</button></div>
+    <div class="row sb" style="margin-bottom:12px">
+      <button class="nb" id="prev" aria-label="Previous">‹</button>
+      <div class="row" style="flex-wrap:nowrap"><select id="selM" aria-label="Month"></select><select id="selY" aria-label="Year"></select></div>
+      <button class="nb" id="next" aria-label="Next">›</button>
     </div>
-
-    <div class="phone" aria-label="Attendance calendar">
-      <h3>Your attendance</h3>
-      <div class="cal-head">
-        <button class="nav-btn" id="prev" aria-label="Previous month">‹</button>
-        <b id="title"></b>
-        <button class="nav-btn" id="next" aria-label="Next month">›</button>
-      </div>
-      <div class="grid" id="dows"></div>
-      <div class="grid" id="days"></div>
-      <div class="legend">
-        <span><i style="background:var(--accent)"></i>Attended</span>
-        <span><i style="background:var(--miss)"></i>Missed</span>
-        <span>Tap a past day to switch</span>
-      </div>
-      <div class="stats">
-        <div class="stat"><b id="sAtt">0</b><small>Attended</small></div>
-        <div class="stat"><b id="sMiss">0</b><small>Missed</small></div>
-        <div class="stat"><b id="sStreak">0</b><small>Streak</small></div>
-      </div>
+    <div id="month"><div class="grid" id="dows"></div><div class="grid" id="days" style="margin-top:6px"></div></div>
+    <div id="year" class="year hide"></div>
+    <div class="stats">
+      <div class="stat"><b id="sA">0</b><small>Attended</small></div>
+      <div class="stat"><b id="sM">0</b><small>Missed</small></div>
+      <div class="stat"><b id="sS">0</b><small>Day streak</small></div>
     </div>
-  </section>
+    <p class="empty" style="margin:12px 0 0;font-size:.85rem">Tap a day to log a workout. Days with a workout turn green, empty days turn red.</p>
+  </div>
+</section>
 
-  <section class="cards">
-    <div class="card"><h4>Fast logging</h4><p>Sets, reps and weight in a few taps.</p></div>
-    <div class="card"><h4>Rest timers</h4><p>Automatic timers for every exercise.</p></div>
-    <div class="card"><h4>Clear progress</h4><p>Charts and streaks that keep you honest.</p></div>
-  </section>
+<section id="log" class="hide">
+  <div class="card">
+    <div class="row sb"><div style="flex:1"><label for="date">Date</label><input type="date" id="date"></div><span class="chip" id="chip"></span></div>
+    <button class="btn ghost" id="force"></button>
+  </div>
+  <div class="card">
+    <b>Add exercise</b>
+    <div style="margin-top:10px"><label for="exN">Exercise</label><input id="exN" list="names" placeholder="e.g. Bench press" autocomplete="off"><datalist id="names"></datalist></div>
+    <div class="row" style="margin-top:10px;flex-wrap:nowrap">
+      <div><label for="exW">Weight</label><input id="exW" type="number" inputmode="decimal" min="0" placeholder="0"></div>
+      <div><label for="exR">Reps</label><input id="exR" type="number" inputmode="numeric" min="1" placeholder="8"></div>
+      <div><label for="exI">RIR</label><input id="exI" type="number" inputmode="numeric" min="0" max="10" placeholder="2"></div>
+    </div>
+    <button class="btn" id="add">Add to workout</button>
+  </div>
+  <div class="card"><b>This day’s workout</b><div id="list"></div></div>
+</section>
 
-  <section class="cta" id="get">
-    <h2>Ready to start?</h2>
-    <a class="btn" href="#get">Download free</a>
-  </section>
-  <footer>© 2026 Ironlog</footer>
+<section id="rm" class="hide">
+  <div class="card">
+    <b>1RM calculator</b>
+    <div style="margin-top:10px"><label for="rN">Exercise</label><input id="rN" placeholder="e.g. Squat"></div>
+    <div class="row" style="margin-top:10px;flex-wrap:nowrap">
+      <div><label for="rW">Weight lifted</label><input id="rW" type="number" inputmode="decimal" min="0" placeholder="100"></div>
+      <div><label for="rR">Reps</label><input id="rR" type="number" inputmode="numeric" min="1" max="30" placeholder="5"></div>
+    </div>
+  </div>
+  <div class="card" id="rOut"><div class="empty">Enter weight and reps to see your estimated one-rep max.</div></div>
+</section>
 </div>
 
 <script>
 (function(){
-  var today=new Date();today.setHours(0,0,0,0);
-  var view=new Date(today.getFullYear(),today.getMonth(),1);
-  var marks={}; // "YYYY-M-D" -> "attended" | "missed"
-  var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
-  var key=function(y,m,d){return y+"-"+m+"-"+d};
+var $=function(i){return document.getElementById(i)};
+var KEY="consistwin",D=null;
+try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+function ds(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+var T=new Date();T.setHours(0,0,0,0);var TS=ds(T);
+if(!D||!D.w)D={start:TS,w:{},o:{}};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}}
+function st(s){
+  if((D.w[s]||[]).length||D.o[s])return"attended";
+  if(s>TS||s<D.start)return"";
+  return"missed";
+}
+var MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+var vy=T.getFullYear(),vm=T.getMonth(),mode="month",sel=TS;
 
-  // Seed past days with sample data (3-4 sessions a week pattern)
-  function seed(y,m){
-    var n=new Date(y,m+1,0).getDate();
-    for(var d=1;d<=n;d++){
-      var dt=new Date(y,m,d);
-      if(dt>today)break;
-      var k=key(y,m,d);
-      if(!(k in marks)){marks[k]=((d*7+m*3)%10)<6?"attended":"missed";}
-    }
+// tabs
+function tab(t){
+  ["cal","log","rm"].forEach(function(x){$(x).classList.toggle("hide",x!==t)});
+  Array.prototype.forEach.call($("tabs").children,function(b){b.classList.toggle("on",b.dataset.t===t)});
+  if(t==="log")renderLog();
+}
+$("tabs").onclick=function(e){if(e.target.dataset.t)tab(e.target.dataset.t)};
+
+// calendar
+["S","M","T","W","T","F","S"].forEach(function(c){var e=document.createElement("div");e.className="dow";e.textContent=c;$("dows").appendChild(e)});
+MN.forEach(function(n,i){var o=document.createElement("option");o.value=i;o.textContent=n;$("selM").appendChild(o)});
+for(var y=T.getFullYear()-5;y<=T.getFullYear()+2;y++){var o=document.createElement("option");o.value=y;o.textContent=y;$("selY").appendChild(o)}
+
+function cells(y,m,mini){
+  var f=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate(),h="";
+  for(var i=0;i<f;i++)h+=mini?"<div></div>":"<div></div>";
+  for(var d=1;d<=n;d++){
+    var s=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0"),c=st(s);
+    h+=mini?'<div class="dot '+c+'"></div>':'<button class="day '+c+(s===sel?" sel":"")+'" data-d="'+s+'">'+d+'</button>';
   }
-
-  var dows=document.getElementById("dows");
-  ["S","M","T","W","T","F","S"].forEach(function(c){var e=document.createElement("div");e.className="dow";e.textContent=c;dows.appendChild(e)});
-
-  function render(){
-    var y=view.getFullYear(),m=view.getMonth();
-    seed(y,m);
-    document.getElementById("title").textContent=months[m]+" "+y;
-    var box=document.getElementById("days");box.innerHTML="";
-    var first=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate();
-    for(var i=0;i<first;i++)box.appendChild(document.createElement("div"));
-    for(var d=1;d<=n;d++){
-      var dt=new Date(y,m,d),k=key(y,m,d);
-      var b=document.createElement("button");
-      b.textContent=d;b.className="day";
-      if(dt<=today){
-        b.classList.add("past",marks[k]);
-        b.setAttribute("aria-label",d+" "+months[m]+": "+marks[k]);
-        (function(k){b.onclick=function(){marks[k]=marks[k]==="attended"?"missed":"attended";render()}})(k);
-      } else {b.disabled=true}
-      if(dt.getTime()===today.getTime())b.classList.add("today");
-      box.appendChild(b);
-    }
-    var a=0,x=0;
-    for(var d2=1;d2<=n;d2++){var v=marks[key(y,m,d2)];if(v==="attended")a++;else if(v==="missed")x++}
-    document.getElementById("sAtt").textContent=a;
-    document.getElementById("sMiss").textContent=x;
-    // streak: consecutive attended days ending at latest tracked day
-    var s=0,c=new Date(today);
-    for(var g=0;g<400;g++){
-      var kk=key(c.getFullYear(),c.getMonth(),c.getDate());
-      if(!(kk in marks)){seed(c.getFullYear(),c.getMonth());}
-      if(marks[kk]==="attended")s++;else break;
-      c.setDate(c.getDate()-1);
-    }
-    document.getElementById("sStreak").textContent=s;
+  return h;
+}
+function counts(y,m){
+  var a=0,x=0,from=m===null?0:m,to=m===null?11:m;
+  for(var mm=from;mm<=to;mm++){var n=new Date(y,mm+1,0).getDate();
+    for(var d=1;d<=n;d++){var c=st(y+"-"+String(mm+1).padStart(2,"0")+"-"+String(d).padStart(2,"0"));if(c==="attended")a++;else if(c==="missed")x++}}
+  return[a,x];
+}
+function streak(){
+  var c=new Date(T),n=0;
+  if(st(TS)!=="attended")c.setDate(c.getDate()-1);
+  while(st(ds(c))==="attended"&&n<2000){n++;c.setDate(c.getDate()-1)}
+  return n;
+}
+function renderCal(){
+  $("selM").value=vm;$("selY").value=vy;
+  $("selM").classList.toggle("hide",mode==="year");
+  $("mM").classList.toggle("on",mode==="month");$("mY").classList.toggle("on",mode==="year");
+  $("month").classList.toggle("hide",mode==="year");$("year").classList.toggle("hide",mode==="month");
+  var c;
+  if(mode==="month"){$("days").innerHTML=cells(vy,vm,false);c=counts(vy,vm)}
+  else{
+    var h="";for(var m=0;m<12;m++)h+='<div class="mini" data-m="'+m+'"><b>'+MN[m]+'</b><div class="grid">'+cells(vy,m,true)+'</div></div>';
+    $("year").innerHTML=h;c=counts(vy,null);
   }
-  document.getElementById("prev").onclick=function(){view=new Date(view.getFullYear(),view.getMonth()-1,1);render()};
-  document.getElementById("next").onclick=function(){view=new Date(view.getFullYear(),view.getMonth()+1,1);render()};
-  render();
+  $("sA").textContent=c[0];$("sM").textContent=c[1];$("sS").textContent=streak();
+}
+function shift(k){if(mode==="year")vy+=k;else{vm+=k;if(vm<0){vm=11;vy--}if(vm>11){vm=0;vy++}}renderCal()}
+$("prev").onclick=function(){shift(-1)};$("next").onclick=function(){shift(1)};
+$("selM").onchange=function(){vm=+this.value;renderCal()};
+$("selY").onchange=function(){vy=+this.value;renderCal()};
+$("mM").onclick=function(){mode="month";renderCal()};
+$("mY").onclick=function(){mode="year";renderCal()};
+$("days").onclick=function(e){var s=e.target.dataset.d;if(s){sel=s;tab("log")}};
+$("year").onclick=function(e){var m=e.target.closest(".mini");if(m){vm=+m.dataset.m;mode="month";renderCal()}};
+
+// workout log
+function renderLog(){
+  $("date").value=sel;
+  var L=D.w[sel]||[],c=st(sel);
+  $("chip").textContent=c==="attended"?"Attended":c==="missed"?"Missed":"Not tracked";
+  $("chip").className="chip "+c;
+  var f=$("force");
+  f.classList.toggle("hide",L.length>0||sel>TS);
+  f.textContent=D.o[sel]?"Undo manual attendance":"Mark attended without logging";
+  var h="";
+  L.forEach(function(x,i){h+='<div class="ex"><div><b>'+esc(x.n)+'</b><small>'+(x.w?x.w+" × ":"")+x.r+" reps · "+(x.i===""?"RIR –":x.i+" RIR")+'</small></div><button data-i="'+i+'" aria-label="Remove">×</button></div>'});
+  $("list").innerHTML=h||'<div class="empty">No exercises yet. Add one above to mark this day as attended.</div>';
+  var names={};Object.keys(D.w).forEach(function(k){D.w[k].forEach(function(x){names[x.n]=1})});
+  $("names").innerHTML=Object.keys(names).map(function(n){return'<option value="'+esc(n)+'">'}).join("");
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+$("date").onchange=function(){if(this.value){sel=this.value;var p=sel.split("-");vy=+p[0];vm=+p[1]-1;renderLog();renderCal()}};
+$("add").onclick=function(){
+  var n=$("exN").value.trim(),r=parseInt($("exR").value,10);
+  if(!n||!(r>0)){$("exN").focus();return}
+  var w=parseFloat($("exW").value),i=$("exI").value;
+  (D.w[sel]=D.w[sel]||[]).push({n:n,w:isNaN(w)?0:w,r:r,i:i===""?"":parseInt(i,10)});
+  if(sel<D.start)D.start=sel;
+  save();$("exR").value="";$("exI").value="";renderLog();renderCal();
+};
+$("list").onclick=function(e){var i=e.target.dataset.i;if(i!==undefined){D.w[sel].splice(+i,1);if(!D.w[sel].length)delete D.w[sel];save();renderLog();renderCal()}};
+$("force").onclick=function(){if(D.o[sel])delete D.o[sel];else D.o[sel]=1;save();renderLog();renderCal()};
+
+// 1RM
+function calc(){
+  var w=parseFloat($("rW").value),r=parseInt($("rR").value,10),o=$("rOut");
+  if(!(w>0)||!(r>0)){o.innerHTML='<div class="empty">Enter weight and reps to see your estimated one-rep max.</div>';return}
+  var ep=r===1?w:w*(1+r/30),br=r<37?w*36/(37-r):ep,rm=(ep+br)/2,nm=$("rN").value.trim();
+  var f=function(x){return Math.round(x*10)/10};
+  var h='<div class="empty" style="padding:0">'+(nm?esc(nm)+" · ":"")+'Estimated 1RM</div><div class="big">'+f(rm)+'</div><small style="color:var(--muted)">Average of Epley ('+f(ep)+') and Brzycki ('+f(br)+')</small><div class="pct">';
+  [90,80,70,60].forEach(function(p){h+='<div><b>'+f(rm*p/100)+'</b><small>'+p+'%</small></div>'});
+  o.innerHTML=h+"</div>";
+}
+["rW","rR","rN"].forEach(function(i){$(i).oninput=calc});
+
+renderCal();
 })();
 </script>
 </body>
